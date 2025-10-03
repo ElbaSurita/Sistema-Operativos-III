@@ -1,1 +1,32 @@
+##### Practica #3 #####
 
+Creacion de usuario con mi nombre (Alan Garcia)
+
+adduser alangarcia (Proceso asistido)
+
+Agregar usuario al grupo sudo(ers)
+
+usermod -aG sudo alangarcia
+
+Crear un grupo llamado guest
+
+addgroup guest (proceso asistido)
+
+Crear un usuario
+
+adduser [usuario] (proceso asistido)
+adduser prueba
+
+Agregar usuario creado anteriormente al grupo guest
+
+usermod -aG guest [usuario]
+usermod -aG guest prueba
+
+Eliminar usuario
+
+deluser [usuario]
+deluser prueba
+
+Eliminar grupo guest
+
+delgroup guest
