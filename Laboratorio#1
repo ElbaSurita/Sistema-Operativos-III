@@ -1,4 +1,4 @@
-##### Practica #3 #####
+#################### Practica #3 ####################
 
 Creacion de usuario con mi nombre (Alan Garcia)
 
@@ -30,3 +30,59 @@ deluser prueba
 Eliminar grupo guest
 
 delgroup guest
+
+#################### Practica #4 #########################
+
+Crear carpeta llamada materia
+
+mkdir [carpeta]
+mkdir materia
+
+Crear archivo estudiante.txt dentro de la carpeta
+
+(cd materia)
+touch [archivo.(extension)]
+touch estudiante.txt
+
+Editar el archivo estudiantes.txt
+
+vi estudiante.txt
+
+(dentro de vi presionamos la tecla i)
+
+Alan Daniel Garcia Mendez
+2025-1403
+
+(presionamos la tecla ESC)
+:wq
+
+Asignamos permisos para que solo el usuario propietario tenga control total
+
+chmod 700 estudiante.txt
+
+Asignamos permisos para que solo el grupo propietario tenga control total
+
+chmod 070 estudiante.txt
+
+Crear carpeta llamada materia2 y copiar el archivo estudiante.txt dentro de esta
+
+(cd .. para salir a la carpeta anterior, en mi caso Desktop)
+
+mkdir [carpeta]
+mkdir materia2
+
+(cd materia2)
+
+Copiar estudiante.txt de materia a materia2
+
+cp /home/ubuntu/Desktop/materia/estudiante.txt .
+cp /home/ubuntu/Desktop/materia/estudiante.txt /home/ubuntu/Desktop/materia2/
+(cualquier opcion de las dos es valida)
+
+Eliminar carpeta materia con el archivo estudiante.txt dentro
+
+(cd.. para salir a la carpeta anterior, en mi caso Desktop)
+
+rm -rf materia/
+
+################################################
