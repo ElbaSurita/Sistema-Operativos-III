@@ -1,0 +1,64 @@
+########################## Practica #1 ################################
+
+Actualizar repositorios
+sudo apt update
+
+Actualizar Sistema operativo
+sudo apt upgrade (-y)
+# -y para auto aceptar la instalación
+
+Buscar Bashtop en la cache de los repositorios
+sudo apt search bashtop
+
+Instalar Bashtop
+sudo apt install bashtop
+
+Desinstalar Bashtop y archivos de configuración
+sudo apt purge bashtop
+
+Eliminar dependencias sin utilizar
+sudo apt autoremove
+
+
+########################## Practica #2 #########################
+
+Editar tareas en crontab del usuario actual
+crontab -e
+
+Editar tareas de crontab para el usuario root
+sudo crontab -e
+
+Comando para actualizar el sistema a las 11:00PM
+sudo apt update && sudo apt upgrade -y
+
+Comando para reiniciar el sistema todos los domingos a las 3:00AM
+/sbin/shutdown -r now
+
+Comando para borrar todo el contenido de la carpeta /tmp/ un minuto despues de ejecutarlo con AT
+echo "rm -rf /tmp/*" | at now + 1 minute
+
+
+##################### Practica #3 #########################
+
+Listar dispositivos de almacenamiento
+sudo fdisk -l
+
+Formatear sistema de archivos en formato ext4
+mkfs.ext4 (ruta_dispositivo_almacenamiento)
+mkfs.ext4 /dev/sdb
+
+Crear carpeta donde montaremos el disco
+mkdir ~/Desktop/CarpetaParaMontar
+
+Montar el disco en la carpeta
+mount /dev/sdb (ruta de la carpeta)
+mount /dev/sdb ~/Desktop/CarpetaParaMontar
+
+Crear archivo dentro del la carpeta con el disco
+touch ~/Desktop/CarpetaParaMontar/AdrianAlcantara.txt
+
+Desmontar la carpeta (previamente debemos salir de la carpeta)
+umount /dev/sdb
+
+Montar en la carpeta /mnt en la raiz
+mount /dev/sdb /mnt/
