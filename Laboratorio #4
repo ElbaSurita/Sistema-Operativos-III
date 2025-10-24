@@ -1,0 +1,146 @@
+####################Practica 1#####################
+Instalamos Apache2 (desde root)
+apt update
+apt install apache2
+
+Primera Parte
+
+Creamos archivos de virtualhosting para el puerto 80 (Hola Mundo)
+
+sudo nano /etc/apache2/sites-available/hola_mundo.conf
+
+
+Contenido:
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/hola_mundo
+    ServerName hola.local
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+Agregamos contenido al virtualhosting web
+
+nano /var/www/hola_mundo/index.html
+
+<html>
+<title>
+Hola Mundo
+</title>
+<body>
+<h1>
+Hola Mundo
+</h1>
+</body>
+</html>
+
+Guardamos y cerramos
+
+Activamos el host y reiniciamos Apache
+
+sudo a2ensite hola_mundo.conf
+sudo systemctl reload apache2
+
+Incluimos hola.local en el /etc/hosts
+
+nano /etc/hosts
+
+Agregamos
+
+127.0.0.1 hola.local
+
+Probamos con curl o con nuestro navegador
+
+curl hola.local
+
+#########
+2da Parte
+
+configuramos para permitir el puerto 8080
+sudo nano /etc/apache2/ports.conf
+Agregamos
+
+Listen 8080
+
+Guardamos y hacemos restart
+
+systemctl restart apache2
+
+Agregamos archivos virtualhosting para la pagina del puerto 8080
+
+sudo nano /etc/apache2/sites-avaiable/alan_local.conf
+
+Escribimos
+
+<VirtualHost *:8080>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/alan_local
+    ServerName alan.local
+    ErrorLog ${APACHE_LOG_DIR}/error8080.log
+    CustomLog ${APACHE_LOG_DIR}/access8080.log combined
+</VirtualHost>
+
+Guardamos y cerramos
+
+Agregamos contenido a la ruta del virtual hosting de Apache
+
+sudo nano /var/www/alan_local/index.html
+<html>
+<title>
+Alan Garcia
+</title>
+<body>
+<h1>
+Alan Daniel Garcia Mendez - 20251403 - Sistemas Operativos III
+</h1>
+</body>
+</html>
+
+Activamos la pagina y reiniciamos apache
+
+sudo a2ensite alan_local.conf
+sudo systemctl reload apache2
+
+Agregamos el dominio al /etc/hosts para que lo reconozca
+
+nano /etc/hosts
+
+127.0.0.1 alan.local
+
+Probamos la pagina
+
+curl alan.local
+
+####################Practica 2#####################
+Instalar Postfix y MailUtils (desde root)
+apt update
+apt install postfix mailutils -y
+
+Tipo de instalacion de postfix Internet Site
+
+Editamos la configuracion
+sudo nano /etc/postfix/main.cf
+Configuramos:
+
+myhostname = alanlab.local
+myorigin = /etc/mailname
+mydestination = $myhostname, localhost.localdomain, localhost
+inet_interfaces = all
+inet_protocols = ipv4
+
+Guardamos
+
+Reiniciamos PostFix
+
+sudo systemctl restart postfix
+
+Enviamos un correo de prueba
+
+echo "Alan Daniel García Méndez - 2025-1403" | mail -s "MambruSeFueALaGuerra" os3conadrian@gmail.com
+
+Verificamos si se envio el correo
+
+sudo tail -f /var/log/mail.log
+
+
+####################Practica 3#####################
