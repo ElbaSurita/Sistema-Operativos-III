@@ -144,3 +144,42 @@ sudo tail -f /var/log/mail.log
 
 
 ####################Practica 3#####################
+
+Instalamos CUPS y CUPS-PDF (como root)
+
+apt install CUPS CUPS-PDF -y
+
+Agregamos un usuario al grupo lpadmin (en mi caso el usuario ubuntu)
+
+usermod -aG lpadmin ubuntu
+
+Permitimos las conexiones externas, conexiones externas de administrador y compartimos las impresoras
+
+cupsctl --remote-admin --remote-any --share-printers
+
+Accedemos al web panel
+
+127.0.0.1:631
+
+Nos logeamos como administrador en la pagina (usuario y contraseña del usuario en lpadmin)
+
+Creamos una impresora nueva
+
+Utilizamos la impresora local CUPS-PDF
+
+Permitimos compartirla
+
+Utilizamos el driver generic
+
+Utilizamos el driver CUPS-PDF Generic no-config
+
+Creamos la impresora y probamos con una pagina de prueba (se guarda en el usuario de administrador usado en la ruta (/home/(usuario)/PDF/)
+
+Agregamos impresora en windows
+
+Abrimos configuracion > Bluetooth y Dispositivos > Impresoras y Escaneres > Agregar Dispositivo > (Si no nos sale al principio, vamos a agregar dispositivo manualmente) >
+Introducimos la ruta de la impresora http://(ip):(puerto)/printers/(impresora) http://10.0.0.53:631/printers/Alan-PDF
+
+Seleccionamos el driver generico text only
+
+Terminamos de agregar la impresora y por ultimo seleccionamos un archivo y lo imprimimos.
