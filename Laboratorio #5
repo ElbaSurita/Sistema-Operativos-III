@@ -1,0 +1,140 @@
+##############################Practica 1#################################
+
+Sincronizacion de carpetas con RSync
+
+Instalamos RSync
+
+apt install rsync
+
+Creamos la carpeta y accedemos a ella
+
+mkdir RSync
+cd RSync
+
+Creamos los 100 archivos
+
+touch Archivo{001..100}.txt
+
+Ejecutamos el comando de sincronización desde el server1 hacia el server2
+
+usuario_server2= ubuntu
+usuario = ubuntu
+IP_server2= 10.0.0.57
+
+rsync -avz /home/{usuario}/rsync {usuario_server2}@{IP_Server2}:/home/{usuario_server2}/
+
+Validamos en el Server2
+
+Creamos el archivo de sincronización desde el server1 hacia el server2
+
+#!/bin/bash
+
+rsync -avz /home/ubuntu/rsync ubuntu@10.0.0.57:/home/ubuntu/
+
+Nombre del archivo rsync1_2.sh
+
+Permisos de ejecucion
+
+chmod +x rsync1_2.sh
+
+Definimos una Tarea Cron para ejecutar el archivo de sincronización cada minuto
+
+crontab -e
+
+* * * * * /home/ubuntu/rsync1_2.sh
+
+Probamos la sincronizacion
+
+Creamos un nuevo archivo para validar que se sincroniza
+
+touch ArchivoNuevo.txt
+
+Esperamos un minuto y validamos en el servidor2
+
+Finalizada
+
+###############################################################
+
+##############################Practica 2#################################
+
+
+
+###############################################################
+
+##############################Practica 3#################################
+
+HA con Keepalived
+
+Instalamos Keepalived
+
+apt install keepalived
+
+Ingresamos a la configuracion
+
+/etc/keepalived/keepalived.conf
+
+Insertamos la linea de configuracion en el servidor maestro (Nodo1)
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0 #Especificamos la interfaz
+    virtual_router_id 51
+    priority 100 
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass ClaveSecreta123
+    }
+    virtual_ipaddress {
+        192.168.10.100
+    }
+}
+
+Insertamos la linea de configuracion en el servidor de reserva (Nodo2)
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    virtual_router_id 51
+    priority 80 
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass ClaveSecreta123
+    }
+    virtual_ipaddress {
+        192.168.10.100
+    }
+}
+
+Reiniciamos servicios en ambos servidores
+
+systemctl restart keepalived
+
+Verificamos la ip en el servidor maestro (Nodo1)
+
+ip a | grep 192.168.10.100
+
+Detenemos el servicio de keepalived para validar el cambio de IP al backup
+
+systemctl stop keepalived
+
+Iniciamos nuevamente el servicio
+
+systemctl start keepalived
+
+Una vez esto, vamos al servicio Apache (puerto 80)
+
+#Navegador#
+
+Colocamos la IP asignada al keepalived con el puerto 80
+
+Detenemos uno de los servicios para verificar el cambio de IP y actualizamos la pagina, deberiamos estar viendo el otro apache
+
+systemctl stop keepalived
+
+Actualizamos la pagina
+
+Debe mostrarse el cambio de servidor
+
+###############################################################
