@@ -71,7 +71,141 @@ ufw delete deny 80
 
 #######################Practica #3#######################
 
+practica 3 
 
+1. Instalación de Snort en Ubuntu
+bash
+
+# Actualizar e instalar dependencias
+sudo apt update
+sudo apt install -y snort libpcap-dev
+
+# Verificar versión
+snort -V
+
+2. Configuración Básica de Snort
+bash
+
+# Editar configuración principal
+sudo nano /etc/snort/snort.conf
+
+# Modificar estas líneas:
+var HOME_NET [IP_de_tu_VM]/32   # Ej: 192.168.1.100/32
+var EXTERNAL_NET any
+ipvar DNS_SERVERS $HOME_NET
+
+3. Creación de Reglas de Detección
+bash
+
+# Crear archivo de reglas locales
+sudo nano /etc/snort/rules/local.rules
+
+Agregar las siguientes reglas:
+plaintext
+
+# Detección de ICMP (Ping)
+alert icmp any any -> $HOME_NET any (msg:"ICMP Ping Detectado"; sid:1000001; rev:1;)
+
+# Detección de tráfico FTP (puerto 21)
+alert tcp any any -> $HOME_NET 21 (msg:"Tráfico FTP Detectado"; sid:1000002; rev:1;)
+
+# Detección de tráfico SSH (puerto 22)
+alert tcp any any -> $HOME_NET 22 (msg:"Tráfico SSH Detectado"; sid:1000003; rev:1;)
+
+# Detección de tráfico HTTP (puerto 80)
+alert tcp any any -> $HOME_NET 80 (msg:"Tráfico HTTP Detectado"; sid:1000004; rev:1;)
+
+4. Ejecución de Snort en Modo IDS
+bash
+
+# Verificar configuración
+sudo snort -T -c /etc/snort/snort.conf
+
+# Ejecutar en modo IDS (reemplaza 'eth0' con tu interfaz de red)
+sudo snort -A console -q -c /etc/snort/snort.conf -i eth0 -l /var/log/snort/
+
+5. Pruebas desde Windows 11
+Prueba 1: Detección de Ping (ICMP)
+powershell
+
+# En Windows (PowerShell o CMD):
+ping [IP_de_VM]
+
+Salida esperada en Snort:
+text
+
+[**] [1:1000001:1] ICMP Ping Detectado [**]
+[Priority: 0] 
+{ICMP} 192.168.1.50 -> 192.168.1.100
+
+Prueba 2: Detección de FTP (Puerto 21)
+powershell
+
+# Usar telnet para probar conexión FTP
+telnet [IP_de_VM] 21
+
+Salida esperada en Snort:
+text
+
+[**] [1:1000002:1] Tráfico FTP Detectado [**]
+[Priority: 0] 
+{TCP} 192.168.1.50:51234 -> 192.168.1.100:21
+
+Prueba 3: Detección de SSH (Puerto 22)
+powershell
+
+# Usar telnet para probar conexión SSH
+telnet [IP_de_VM] 22
+
+Salida esperada en Snort:
+text
+
+[**] [1:1000003:1] Tráfico SSH Detectado [**]
+[Priority: 0] 
+{TCP} 192.168.1.50:51235 -> 192.168.1.100:22
+
+Prueba 4: Detección de HTTP (Puerto 80)
+powershell
+
+# Usar curl o navegador web
+curl http://[IP_de_VM]
+
+Salida esperada en Snort:
+text
+
+[**] [1:1000004:1] Tráfico HTTP Detectado [**]
+[Priority: 0] 
+{TCP} 192.168.1.50:51236 -> 192.168.1.100:80
+
+6. Visualización de Alertas
+bash
+
+# Ver alertas en tiempo real (en otra terminal)
+sudo tail -f /var/log/snort/alert
+
+7. Detener Snort
+bash
+
+# Para detener Snort
+sudo pkill snort
+
+Resumen de Configuración
+Protocolo	Puerto	Regla Snort	Prueba Windows
+ICMP	-	alert icmp any any -> $HOME_NET any	ping [IP]
+FTP	21	alert tcp any any -> $HOME_NET 21	telnet [IP] 21
+SSH	22	alert tcp any any -> $HOME_NET 22	telnet [IP] 22
+HTTP	80	alert tcp any any -> $HOME_NET 80	curl http://[IP]
+
+Consejos:
+
+    Asegúrate que los servicios (FTP/SSH/HTTP) están corriendo en Ubuntu
+
+    Verifica que no hay reglas de firewall bloqueando el tráfico
+
+    Para pruebas más reales, puedes usar Nmap desde Windows:
+    powershell
+
+nmap -p 21,22,80 [IP_de_VM]
 
 #########################################################
 
