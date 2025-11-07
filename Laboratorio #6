@@ -1,0 +1,195 @@
+#######################Practica #1#######################
+
+Cifrado con GPG
+
+Instalamos GPG2
+
+sudo apt install gnupg2
+
+Generamos las claves
+
+gpg2 --full-generate-key
+
+Creamos un directorio, y dentro de este un archivo
+
+mkdir ~/Desktop/Prueba
+echo "Texto para probar el cifrado GPG2" > ~/Desktop/Prueba/Archivo1.txt
+
+Ciframos el archivo
+
+gpg2 -e -r "ID" ~/Desktop/Prueba/Archivo1.txt
+
+Intentamos acceder al archivo
+
+cat ~/Desktop/Prueba/Archivo1.txt.gpg
+
+Desciframos el archivo
+
+gpg2 -d ~/Desktop/Prueba/Archivo1.txt.gpg > Archivo2.txt
+
+Verificamos la integridad del archivo
+
+cat Archivo2.txt
+
+#########################################################
+
+#######################Practica #2#######################
+
+Verificamos los servicios desde un cliente Externo
+
+Bloqueamos trafico entrante hacia puertos 21, 22 y 80 con IPTables
+
+sudo iptables -A INPUT -p tcp --dport 21 -j DROP
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+sudo iptables -A INPUT -p tcp --dport 80 -j DROP
+
+Probamos el acceso desde un cliente externo
+
+Liberamos las reglas
+
+sudo iptables -D INPUT -p tcp --dport 21 -j DROP
+sudo iptables -D INPUT -p tcp --dport 22 -j DROP
+sudo iptables -D INPUT -p tcp --dport 80 -j DROP
+
+Probamos acceso desde cliente externo
+
+Bloqueamos el trafico entrante hacia puertos 21, 22 y 80 con UFW (Debian Based)
+
+ufw deny 21
+ufw deny 22
+ufw deny 80
+
+Probamos acceso desde cliente externo
+
+Liberamos reglas 
+
+ufw delete deny 21
+ufw delete deny 22
+ufw delete deny 80
+
+#########################################################
+
+#######################Practica #3#######################
+
+
+
+#########################################################
+
+#######################Practica #4#######################
+
+1. Instalación de Google Authenticator en Ubuntu
+
+sudo apt update
+sudo apt install libpam-google-authenticator -y
+
+2. Configuración para el Usuario
+
+    Ejecutar el asistente de configuración (como usuario normal, NO root):
+
+    google-authenticator
+
+    Seguir las instrucciones interactivas:
+
+        ¿Generar tokens basados en tiempo? (Sí)
+
+        Guardar el código de emergencia (en un lugar seguro)
+
+        ¿Actualizar el archivo ~/.google_authenticator? (Sí)
+
+        ¿Permitir múltiples usos del mismo código? (No, por seguridad)
+
+        ¿Limitar ventana de verificación? (Sí)
+
+        ¿Habilitar protección contra fuerza bruta? (Sí)
+
+    Configurar el código QR en Google Authenticator (app móvil):
+
+        Escanear el QR mostrado en terminal.
+
+        O ingresar manualmente la clave secreta.
+
+3. Configurar PAM para usar Google Authenticator
+
+    Editar el archivo PAM para SSH:
+
+sudo nano /etc/pam.d/sshd
+
+Agregar al inicio del archivo:
+
+auth required pam_google_authenticator.so
+
+Comentar (si existe) la línea:
+
+    @include common-auth
+
+    (para evitar doble solicitud de contraseña).
+
+4. Configurar SSH para usar 2FA
+
+    Editar la configuración de SSH:
+
+sudo nano /etc/ssh/sshd_config
+
+Asegurar estas líneas estén así:
+plaintext
+
+ChallengeResponseAuthentication yes
+UsePAM yes
+PasswordAuthentication yes  # (Si usas contraseña + 2FA)
+
+Reiniciar SSH:
+
+    sudo systemctl restart sshd
+
+5. Probamos desde un cliente externo
+
+ssh usuario@[IP_de_tu_VM]
+
+    Secuencia de autenticación:
+
+        Ingresar contraseña.
+
+        Ingresar código de 6 dígitos (app móvil).
+
+6. Solución de Problemas Comunes
+🔹 Error: "Permission denied (keyboard-interactive)"
+
+    Verifica que en /etc/ssh/sshd_config esté:
+    plaintext
+
+    ChallengeResponseAuthentication yes
+    UsePAM yes
+
+🔹 No se solicita el código 2FA
+
+    Revisa que /etc/pam.d/sshd tenga:
+    plaintext
+
+    auth required pam_google_authenticator.so
+
+🔹 Código no funciona
+
+    Verifica sincronización de tiempo en la VM:
+
+    sudo apt install ntpdate
+    sudo ntpdate pool.ntp.org
+
+7. Desactivar 2FA (Opcional)
+
+    Eliminar el archivo de configuración:
+
+rm ~/.google_authenticator
+
+Revertir cambios en PAM:
+
+sudo nano /etc/pam.d/sshd
+
+    Eliminar pam_google_authenticator.so.
+
+    Descomentar @include common-auth.
+
+Reiniciar SSH:
+
+sudo systemctl restart sshd
+
+#########################################################
