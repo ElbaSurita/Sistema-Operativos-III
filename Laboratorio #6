@@ -74,7 +74,7 @@ ufw delete deny 80
 practica 3 
 
 1. Instalación de Snort en Ubuntu
-bash
+
 
 # Actualizar e instalar dependencias
 sudo apt update
@@ -84,7 +84,7 @@ sudo apt install -y snort libpcap-dev
 snort -V
 
 2. Configuración Básica de Snort
-bash
+
 
 # Editar configuración principal
 sudo nano /etc/snort/snort.conf
@@ -95,13 +95,13 @@ var EXTERNAL_NET any
 ipvar DNS_SERVERS $HOME_NET
 
 3. Creación de Reglas de Detección
-bash
+
 
 # Crear archivo de reglas locales
 sudo nano /etc/snort/rules/local.rules
 
 Agregar las siguientes reglas:
-plaintext
+
 
 # Detección de ICMP (Ping)
 alert icmp any any -> $HOME_NET any (msg:"ICMP Ping Detectado"; sid:1000001; rev:1;)
@@ -116,7 +116,7 @@ alert tcp any any -> $HOME_NET 22 (msg:"Tráfico SSH Detectado"; sid:1000003; re
 alert tcp any any -> $HOME_NET 80 (msg:"Tráfico HTTP Detectado"; sid:1000004; rev:1;)
 
 4. Ejecución de Snort en Modo IDS
-bash
+
 
 # Verificar configuración
 sudo snort -T -c /etc/snort/snort.conf
@@ -126,65 +126,65 @@ sudo snort -A console -q -c /etc/snort/snort.conf -i eth0 -l /var/log/snort/
 
 5. Pruebas desde Windows 11
 Prueba 1: Detección de Ping (ICMP)
-powershell
+
 
 # En Windows (PowerShell o CMD):
 ping [IP_de_VM]
 
 Salida esperada en Snort:
-text
+
 
 [**] [1:1000001:1] ICMP Ping Detectado [**]
 [Priority: 0] 
 {ICMP} 192.168.1.50 -> 192.168.1.100
 
 Prueba 2: Detección de FTP (Puerto 21)
-powershell
+
 
 # Usar telnet para probar conexión FTP
 telnet [IP_de_VM] 21
 
 Salida esperada en Snort:
-text
+
 
 [**] [1:1000002:1] Tráfico FTP Detectado [**]
 [Priority: 0] 
 {TCP} 192.168.1.50:51234 -> 192.168.1.100:21
 
 Prueba 3: Detección de SSH (Puerto 22)
-powershell
+
 
 # Usar telnet para probar conexión SSH
 telnet [IP_de_VM] 22
 
 Salida esperada en Snort:
-text
+
 
 [**] [1:1000003:1] Tráfico SSH Detectado [**]
 [Priority: 0] 
 {TCP} 192.168.1.50:51235 -> 192.168.1.100:22
 
 Prueba 4: Detección de HTTP (Puerto 80)
-powershell
+
 
 # Usar curl o navegador web
 curl http://[IP_de_VM]
 
 Salida esperada en Snort:
-text
+
 
 [**] [1:1000004:1] Tráfico HTTP Detectado [**]
 [Priority: 0] 
 {TCP} 192.168.1.50:51236 -> 192.168.1.100:80
 
 6. Visualización de Alertas
-bash
+
 
 # Ver alertas en tiempo real (en otra terminal)
 sudo tail -f /var/log/snort/alert
 
 7. Detener Snort
-bash
+
 
 # Para detener Snort
 sudo pkill snort
@@ -203,7 +203,6 @@ Consejos:
     Verifica que no hay reglas de firewall bloqueando el tráfico
 
     Para pruebas más reales, puedes usar Nmap desde Windows:
-    powershell
 
 nmap -p 21,22,80 [IP_de_VM]
 
@@ -265,7 +264,6 @@ Comentar (si existe) la línea:
 sudo nano /etc/ssh/sshd_config
 
 Asegurar estas líneas estén así:
-plaintext
 
 ChallengeResponseAuthentication yes
 UsePAM yes
@@ -285,30 +283,8 @@ ssh usuario@[IP_de_tu_VM]
 
         Ingresar código de 6 dígitos (app móvil).
 
-6. Solución de Problemas Comunes
-🔹 Error: "Permission denied (keyboard-interactive)"
 
-    Verifica que en /etc/ssh/sshd_config esté:
-    plaintext
-
-    ChallengeResponseAuthentication yes
-    UsePAM yes
-
-🔹 No se solicita el código 2FA
-
-    Revisa que /etc/pam.d/sshd tenga:
-    plaintext
-
-    auth required pam_google_authenticator.so
-
-🔹 Código no funciona
-
-    Verifica sincronización de tiempo en la VM:
-
-    sudo apt install ntpdate
-    sudo ntpdate pool.ntp.org
-
-7. Desactivar 2FA (Opcional)
+6. Desactivar 2FA (Opcional)
 
     Eliminar el archivo de configuración:
 
