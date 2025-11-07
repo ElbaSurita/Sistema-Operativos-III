@@ -90,7 +90,7 @@ snort -V
 sudo nano /etc/snort/snort.conf
 
 # Modificar estas líneas:
-var HOME_NET [IP_de_tu_VM]/32   # Ej: 192.168.1.100/32
+var HOME_NET [IP_de_tu_VM]/32   10.0.0.59/32 (Con fines del laboratorio, colocamos any)
 var EXTERNAL_NET any
 ipvar DNS_SERVERS $HOME_NET
 
@@ -121,8 +121,8 @@ alert tcp any any -> $HOME_NET 80 (msg:"Tráfico HTTP Detectado"; sid:1000004; r
 # Verificar configuración
 sudo snort -T -c /etc/snort/snort.conf
 
-# Ejecutar en modo IDS (reemplaza 'eth0' con tu interfaz de red)
-sudo snort -A console -q -c /etc/snort/snort.conf -i eth0 -l /var/log/snort/
+# Ejecutar en modo IDS 
+sudo snort -A console -q -c /etc/snort/snort.conf -i ens33 -l /var/log/snort/
 
 5. Pruebas desde Windows 11
 Prueba 1: Detección de Ping (ICMP)
