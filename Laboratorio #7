@@ -5,7 +5,53 @@
 
 ###### PRACTICA #2 ######
 
+Instalar Samba
+
+apt install samba smbclient
+
+Crear carpeta para compartir
+
+sudo mkdir -p /srv/samba/compartida
+sudo chmod 777 /srv/samba/compartida
+
+Configuramos usuarios y grupos
+
+useradd sambauser
+groupadd sambagroup
+
+smbpasswd -a sambauser
+
+chown sambauser:sambagroup /srv/samba/compartida
+
+editar archivo de configuracion de smb y agregamos estas lineas
+
+[Compartida]
+   path = /srv/samba/compartida
+   browseable = yes
+   read only = no
+   valid users = sambauser
+
+Reiniciamos el servicio
+
+systemctl restart smbd
+systemctl restart smb
+systemctl restart samba
+
+Accedemos desde smbclient
+
+smbclient //10.0.0.61/Compartida -U sambauser
+
+Proporcionamos la contraseña y listo
+
+Acceso desde el PC.
+
+Administrador de archivos > Este equipo > Agregar volumen en linea > Colocamos la direccion y el recurso compartido > Proporcionamos credenciales > Terminado.
 
 
 
 ###### PRACTICA #3 ######
+
+
+
+
+
