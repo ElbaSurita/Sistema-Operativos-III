@@ -1,3 +1,50 @@
+####### Webmin #######
+
+Instalamos el setup
+
+curl -o webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
+sudo sh webmin-setup-repo.sh
+
+Instalamos Webmin
+
+sudo apt-get install webmin --install-recommends
+
+Acceso por web
+
+127.0.0.1:10000
+
+(usuarios y contraseñas del usuario regular)
+
+
+(Administración de usuarios: Crear, y eliminar una cuenta de usuario.
+
+System > Users and Groups > Create New User
+
+Gestión de servicios: Iniciar, detener y reiniciar servicio del sistema (Ej SSH). 
+
+System > Bootup and Shutdown
+
+Configuración de red: Configurar una IP estatica en interfaces de red.
+
+Networking > Network Configuration > Network Interfaces 
+
+Administración de software: actualizar  Instalar,y eliminar Alguna herramienta.
+
+System > Software Packages
+
+Gestión de archivos y directorios: Explorar, editar un archivo y eliminarlo. 
+
+Tools > File Manager
+
+Monitorización del sistema: Supervisar el rendimiento del sistema,(Memoria, Procesador Armacenamiento).
+
+Dashboard
+
+
+######################
+
+
+
 ####### Terraform #######
 
 Generamos claves ssh
