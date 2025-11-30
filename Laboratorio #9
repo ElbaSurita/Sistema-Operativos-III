@@ -157,4 +157,8 @@ Si da error por la VNet, ejecutar este comando
 
 terraform import azurerm_subnet.subnet "/subscriptions/9145c68b-76f8-4b62-9061-174a25eea61f/resourceGroups/TFSOIII/providers/Microsoft.Network/virtualNetworks/TFSOIIIVnet/subnets/TFSOIIIVnet"
 
+ssh -i ~/.ssh/azure_vm_key alangarcia@(IP VM)
+
+
+
 #########################
