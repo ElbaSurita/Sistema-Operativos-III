@@ -209,3 +209,171 @@ ssh -i ~/.ssh/azure_vm_key alangarcia@(IP VM)
 
 
 #########################
+
+
+####### Instalacion de Ansible #######
+
+#Windows Ansible Client#
+
+net user ansible asdf4321 /add
+net localgroup Administrators ansible /add
+Get-NetConnectionProfile
+Set-NetConnectionProfile -InterfaceAlias "Ethernet0" -NetworkCategory Private
+Enable-PSRemoting -Force
+winrm set winrm/config/service/auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+netsh advfirewall firewall add rule name="WinRM HTTP" dir=in action=allow protocol=TCP localport=5985
+winrm quickconfig
+
+#Linux Ansible Client#
+
+sudo adduser ansible
+sudo usermod -aG sudo ansible
+
+#Linux Ansible Server#
+
+ssh-keygen -t rsa -b 4096
+
+ssh-copy-id ansible@(ip_Linux_Ansible_client)
+
+sudo apt update
+sudo apt install ansible -y
+
+sudo mkdir /etc/ansible
+sudo nano /etc/ansible/hosts
+
+[linux]
+mi-vm-linux ansible_host=<IP_VM_LINUX> ansible_user=ansible ansible_ssh_private_key_file=/home/ansible/.ssh/id_rsa
+
+[win]
+mi-pc-windows ansible_host=<IP_VM_WINDOWS> ansible_user=ansible ansible_password=asdf4321 ansible_connection=winrm ansible_port=5985 ansible_winrm_scheme=http ansible_winrm_transport=basic
+
+#Pings#
+
+ansible linux -m ping
+
+ansible win -m ping
+
+########################
+
+####### Comandos Ad-hoc #######
+
+#Copiar archivos win#
+
+Creamos archivo
+
+echo "Alan Garcia - 2025-1403" > /home/alan/archivo.txt
+
+Mover archivo de Ansible Server a Windows
+
+ansible win -m win_copy "src=/home/alan/archivo.txt dest=C:/Users/ansible/Desktop"
+
+Copiar archivo de escritorio a Documentos
+
+ansible win -m win_copy "src='C:/Users/ansible/Desktop/archivo.txt' dest=src='C:/Users/ansible/Documents' remote_src=true"
+
+#Reiniciar maquina linux#
+
+ansible linux -m reboot -b --ask-become-pass
+
+
+
+###############################
+
+####### Playbooks #######
+
+MAQUINA SERVIDOR 
+
+# Descargar Notepad++
+wget https://github.com/notepad-plus-plus/notepad-plus-plus/releases/latest/download/npp.8.8.8.portable.x64.zip -O ~/Desktop/npp_portable.zip
+
+nano instalacion_notepad.yml 
+
+---
+- name: Instalar Notepad++ portable Windows
+  hosts: win
+  gather_facts: no
+  tasks:
+    - name: Crear carpeta en Windows
+      win_file:
+        path: C:\Program Files\Notepad++
+        state: directory
+
+    - name: Copiar archivo ZIP de Notepad++ a Windows
+      win_copy:
+        src: /home/alan/Desktop/npp_portable.zip 
+        dest: C:\Program Files\Notepad++\npp_portable.zip
+
+    - name: Descomprimir Notepad++ en Windows
+      win_unzip:
+        src: C:\Program Files\Notepad++\npp_portable.zip
+        dest: C:\Program Files\Notepad++
+        removes: C:\Program Files\Notepad++\npp_portable.zip
+
+    - name: Verificar que Notepad++ fue instalado
+      win_stat:
+        path: C:\Program Files\Notepad++\notepad++.exe
+      register: npp_check
+
+    - name: Mostrar resultado de la verificación
+      debug:
+        msg: "Notepad++ instalado correctamente"
+      when: npp_check.stat.exists
+
+-----------------------------------------------------------------------------------------------
+
+# Ejecucion del Playbook
+ansible-playbook ~/Desktop/instalacion_notepad.yml
+
+
+
+Playbook para instalar NGINX en la VM Linux
+
+nano installnginx.yml
+
+---
+- name: Instalar NGINX en Linux
+  hosts: linux
+  become: yes
+  remote_user: ansible
+  tasks:
+    - name: Actualizar cache de paquetes
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Instalar NGINX
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Iniciar y habilitar NGINX
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Verificar que NGINX esta funcionando
+      ansible.builtin.service_facts:
+
+    - name: Mostrar estado de NGINX
+      debug:
+        msg: "NGINX funcionando correctamente."
+      when: "'nginx.service' in ansible_facts.services and ansible_facts.services['nginx.service'].state == 'running'"
+
+---
+
+Ejecucion del Playbook
+
+ansible-playbook ~/Desktop/instalacion_nginx.yml --ask-become-pass
+
+########################
+
+
+
+
+
+
+
+
+
+
