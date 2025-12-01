@@ -239,6 +239,10 @@ Ejecutamos los comandos de terraform para iniciar el despliegue
 
 terraform init
 
+terraform fmt
+
+terraform validate
+
 Luego ejecutamos
 
 terraform plan
@@ -246,6 +250,8 @@ terraform plan
 Y luego al confirmar todo
 
 Terraform apply (seteamos yes)
+
+terraform show
 
 
 Si da error por la VNet, ejecutar este comando
