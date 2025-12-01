@@ -320,11 +320,11 @@ echo "Alan Garcia - 2025-1403" > /home/alan/archivo.txt
 
 Mover archivo de Ansible Server a Windows
 
-ansible win -m win_copy "src=/home/alan/archivo.txt dest=C:/Users/ansible/Desktop"
+ansible win -m win_copy -a "src=/home/alan/archivo.txt dest=C:/Users/ansible/Desktop"
 
 Copiar archivo de escritorio a Documentos
 
-ansible win -m win_copy "src='C:/Users/ansible/Desktop/archivo.txt' dest=src='C:/Users/ansible/Documents' remote_src=true"
+ansible win -m win_copy -a "src='C:/Users/ansible/Desktop/archivo.txt' dest=src='C:/Users/ansible/Documents' remote_src=true"
 
 #Reiniciar maquina linux#
 
