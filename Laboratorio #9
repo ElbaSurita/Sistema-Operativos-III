@@ -47,6 +47,54 @@ Dashboard
 
 ####### Terraform #######
 
+#Setup Terraform#
+
+#Instalar Terraform
+
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+gpg --dearmor | \
+sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+gpg --no-default-keyring \
+--keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+--fingerprint
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update
+sudo apt-get install terraform
+
+#Verificamos Instalacion
+
+terraform -help
+
+#Setup Azure#
+
+#Instalar Azure CLI
+
+curl -L https://aka.ms/InstallAzureCli | bash
+
+#Logeamos con Azure
+
+az login --use-device-code
+
+az account show --output table
+
+az account set --subscription "(ID)"
+
+#Creamos el servicio principal
+
+az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>"
+
+#Exportamos las variables de entorno
+
+export ARM_CLIENT_ID="<APPID_VALUE>"
+export ARM_CLIENT_SECRET="<PASSWORD_VALUE>"
+export ARM_SUBSCRIPTION_ID="<SUBSCRIPTION_ID>"
+export ARM_TENANT_ID="<TENANT_VALUE>"
+
 Generamos claves ssh
 
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/azure_vm_key
