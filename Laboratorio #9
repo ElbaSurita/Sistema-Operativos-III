@@ -426,6 +426,43 @@ ansible-playbook ~/Desktop/instalacion_nginx.yml --ask-become-pass
 
 
 
+Opciones extras ansible playbooks
+
+#####En caso de crear usuario#####
+---
+- name: Crear usuario
+  hosts: linux
+  become: yes
+
+  tasks:
+    - name: Agregar usuario
+      user:
+	name: adrian123
+        password: "{{ 'adrian123' | password_hash('sha512') }}"
+        groups: sudo
+        append: yes
+        shell: /bin/bash
+
+    - name: Instalar Bashtop
+      apt:
+	name: bashtop
+        update_cache: yes
+        state: present
+
+###En caso de creacion de usuario en windows###
+---
+- name: Configuracion Windows
+  hosts: Win
+
+  tasks:
+    - name: Crear usuario de prueba
+      ansible.windows.win_user:
+        name: prueba
+        password: "Password123!"
+        state: present
+        groups:
+          - Usuarios
+          - Administradores
 
 
 
