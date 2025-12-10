@@ -99,7 +99,7 @@ sudo nano /etc/hosts
 
 # Agregar dentro del archivo:
 127.0.0.1 localhost
-192.168.100.10 dc01.alan.local dc01
+(ip_maquina) dc01.alan.local dc01
 
 ### SOLUCIÓN PARA ERRORES DE DNS (RESOLVED) ###
 
