@@ -57,7 +57,58 @@ Finalizada
 
 ##############################Practica 2#################################
 
+------------------------------------------------------------------------------------------------------------------------
+PRACTICA 2 — Configuración de Clúster con Pacemaker y Corosync
+------------------------------------------------------------------------------------------------------------------------
 
+EN AMBOS NODOS
+
+Instalamos pacemaker y corosync
+---------------------------------------------
+sudo apt install pacemaker corosync -y
+
+Verificamos servicios
+sudo systemctl status pacemaker
+sudo systemctl restart pacemaker
+sudo systemctl status pcsd
+sudo systemctl start corosync
+
+Autenticación entre clusters
+sudo passwd hacluster
+---------------------------------------------
+Usuario: hacluster
+Contraseña: hacluster
+Habilitar e iniciar el pcsd:
+sudo systemctl enable --now pcsd
+
+EN EL NODO 1
+---------------------------------------------
+sudo pcs host auth <ip_nodo1> <ip_nodo2> -u hacluster
+sudo pcs cluster setup mycluster <ip_nodo1> <ip_nodo2>
+Si da error, usamos:
+sudo pcs cluster --force setup mycluster <ip_nodo1> <ip_nodo2>
+
+Iniciamos los clúster
+sudo pcs cluster start --all
+
+Verificar estado de los clusters
+sudo pcs status
+
+Si sale advertencia de STONITH
+sudo pcs property set stonith-enabled=false
+
+Creamos IP flotante para el clúster
+sudo pcs resource create <Nombre> ocf:heartbeat:IPaddr2 ip=ip_flotante cidr_netmask=24 op monitor interval=30s
+
+pcs constraint location <Nombre> prefers nodo1=INFINITY
+
+#POR ULTIMO
+sudo systemctl start corosync
+sudo systemctl enable corosync
+sudo systemctl start pacemaker
+sudo systemctl enable pacemaker
+sudo pcs cluster start --all
+sudo pcs property set no-quorum-policy=ignore
 
 ###############################################################
 
