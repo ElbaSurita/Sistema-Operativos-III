@@ -53,5 +53,198 @@ Administrador de archivos > Este equipo > Agregar volumen en linea > Colocamos l
 
 
 
+##############################################################################################
+#                      PRÁCTICA 3 - DOMAIN CONTROLLER (Alan)                 
+#############################################################################################
+
+=======================================================================
+=                          CONFIGURACIONES BASE                        =
+=======================================================================
+
+# Actualizar sistema
+sudo apt update && sudo apt upgrade -y
+
+# Configurar hostname
+sudo hostnamectl set-hostname dc01.alan.local
+
+# Verificar hostname
+hostname
+
+=======================================================================
+=                           CONFIGURAR NETPLAN                         =
+=======================================================================
+
+# Editar netplan
+sudo nano /etc/netplan/00-installer-config.yaml
+
+########################CONFIGURACION DEL NETPLAN#####################
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    (interfaz):   # Ajusta si tu interfaz es diferente
+      dhcp4: false
+      addresses:
+        - (ip_de_la_maquina)/24
+      gateway4: (default_gateway)
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+        search:
+          - alan.local
+######################################################################
+# Aplicar cambios
+sudo netplan apply
+
+=======================================================================
+=                          CONFIGURAR /etc/hosts                       =
+=======================================================================
+
+sudo nano /etc/hosts
+
+# Agregar dentro del archivo:
+127.0.0.1 localhost
+192.168.100.10 dc01.alan.local dc01
+
+=======================================================================
+=                SOLUCIÓN PARA ERRORES DE DNS (RESOLVED)               =
+=======================================================================
+
+sudo systemctl stop systemd-resolved
+sudo systemctl disable systemd-resolved
+sudo systemctl mask systemd-resolved
+sudo rm -f /etc/resolv.conf
+sudo touch /etc/resolv.conf
+sudo chmod 644 /etc/resolv.conf
+
+sudo nano /etc/resolv.conf
+# Escribir:
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+
+=======================================================================
+=                    INSTALAR SERVICIOS DEL CONTROLADOR                =
+=======================================================================
+
+sudo apt install -y samba samba-ad-dc smbclient winbind libnss-winbind \
+libpam-winbind krb5-user krb5-config dnsutils acl attr chrony
+
+# Durante la configuración de Kerberos:
+# Realm: ALAN.LOCAL
+# Kerberos servers: dc01.alan.local
+# Administrative server: dc01.alan.local
+
+=======================================================================
+=                       ELIMINAR POSIBLES CONFLICTOS                   =
+=======================================================================
+
+sudo apt remove --purge bind9 bind9utils -y
+sudo pkill -9 named
+sudo pkill -9 dnsmasq
+
+# Verificar que el puerto 53 está libre
+sudo ss -tulpn | grep :53
+
+=======================================================================
+=                 Detén el servicio Samba por si está corriendo        =
+=======================================================================
+sudo systemctl stop samba-ad-dc
+
+=======================================================================
+=                Mueve o borra cualquier configuración vieja           =
+=======================================================================
+sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+=======================================================================
+=               Ejecuta el comando para crear el dominio               =
+=======================================================================
+sudo samba-tool domain provision --use-rfc2307 --interactive
+  realm=ALAN.LOCAL 
+  domain=ALAN 
+  server-role=dc 
+  dns-backend=SAMBA_INTERNAL 
+  dns-forwarder=8.8.8.8 
+  adminpass='Asdf4321'
+
+=======================================================================
+=                  CONFIGURAR KERBEROS (AUTOMÁTICO DE SAMBA)           =
+=======================================================================
+
+sudo cp /var/lib/samba/private/krb5.conf /etc/krb5.conf
+
+=======================================================================
+=                 CONFIGURAR DNS DEFINITIVO DEL CONTROLADOR            =
+=======================================================================
+
+sudo nano /etc/resolv.conf
+
+# Escribir dentro:
+nameserver 127.0.0.1
+search alan.local
+domain alan.local
+
+# Volver inmutable para evitar cambios
+sudo chattr +i /etc/resolv.conf
+
+=======================================================================
+=                     INICIAR Y HABILITAR SERVICIOS SAMBA              =
+=======================================================================
+
+sudo systemctl enable samba-ad-dc
+sudo systemctl start samba-ad-dc
+
+=======================================================================
+=                            REINICIAR SERVIDOR                        =
+=======================================================================
+
+sudo reboot
+
+=======================================================================
+=                  VERIFICACIONES DESPUÉS DEL REINICIO                 =
+=======================================================================
+
+# Verificar estado de Samba
+sudo systemctl status samba-ad-dc
+
+# Verificar DNS
+nslookup alan.local
+nslookup dc01.alan.local
+
+# Verificar Kerberos
+kinit Administrator@ALAN.LOCAL
+# Contraseña: Admin123!
+klist
+
+=======================================================================
+=                           HABILITAR USER                             =
+=======================================================================
+
+sudo smbpasswd -a lanegracubana
+sudo smbpasswd -e lanegracubana
+
+sudo samba-tool user enable lanegracubana
+
+sudo samba-tool domain passwordsettings set --complexity=off
+
+sudo samba-tool user setpassword lanegracubana --newpassword="Temporal123"
+
+# Verificar usuarios creados en AD
+sudo samba-tool user list
+
+# Información técnica del dominio
+sudo samba-tool domain info 127.0.0.1
+
+=======================================================================
+=                    UNIR EQUIPOS WINDOWS AL DOMINIO                   =
+=======================================================================
+
+# Primero, establecemos el DNS que sera la maquina donde esta el samba
+
+Luego procedemos
+
+# Usar en PowerShell (como Administrador):
+Add-Computer -DomainName "ALAN.LOCAL" -Credential ALAN\Administrator
+
 
 
