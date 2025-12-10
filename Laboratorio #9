@@ -286,6 +286,8 @@ sudo usermod -aG sudo ansible
 
 #Linux Ansible Server#
 
+#Desde root
+
 ssh-keygen -t rsa -b 4096
 
 ssh-copy-id ansible@(ip_Linux_Ansible_client)
@@ -297,7 +299,7 @@ sudo mkdir /etc/ansible
 sudo nano /etc/ansible/hosts
 
 [linux]
-mi-vm-linux ansible_host=<IP_VM_LINUX> ansible_user=ansible ansible_ssh_private_key_file=/home/ansible/.ssh/id_rsa
+mi-vm-linux ansible_host=<IP_VM_LINUX> ansible_user=ansible ansible_ssh_private_key_file=/root/.ssh/id_rsa
 
 [win]
 mi-pc-windows ansible_host=<IP_VM_WINDOWS> ansible_user=ansible ansible_password=asdf4321 ansible_connection=winrm ansible_port=5985 ansible_winrm_scheme=http ansible_winrm_transport=basic
