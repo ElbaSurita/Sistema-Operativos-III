@@ -464,6 +464,32 @@ Opciones extras ansible playbooks
           - Usuarios
           - Administradores
 
+    - name: Crear carpeta en Windows
+      win_file:
+        path: C:\Program Files\Notepad++
+        state: directory
+
+    - name: Copiar archivo ZIP de Notepad++ a Windows
+      win_copy:
+        src: /home/alan/Desktop/npp_portable.zip 
+        dest: C:\Program Files\Notepad++\npp_portable.zip
+
+    - name: Descomprimir Notepad++ en Windows
+      win_unzip:
+        src: C:\Program Files\Notepad++\npp_portable.zip
+        dest: C:\Program Files\Notepad++
+        removes: C:\Program Files\Notepad++\npp_portable.zip
+
+    - name: Verificar que Notepad++ fue instalado
+      win_stat:
+        path: C:\Program Files\Notepad++\notepad++.exe
+      register: npp_check
+
+    - name: Mostrar resultado de la verificación
+      debug:
+        msg: "Notepad++ instalado correctamente"
+      when: npp_check.stat.exists
+
 
 
 
