@@ -220,14 +220,14 @@ klist
 =                           HABILITAR USER                             =
 =======================================================================
 
-sudo smbpasswd -a lanegracubana
-sudo smbpasswd -e lanegracubana
+sudo smbpasswd -a Alan
+sudo smbpasswd -e Alan
 
-sudo samba-tool user enable lanegracubana
+sudo samba-tool user enable Alan
 
 sudo samba-tool domain passwordsettings set --complexity=off
 
-sudo samba-tool user setpassword lanegracubana --newpassword="Temporal123"
+sudo samba-tool user setpassword Alan --newpassword="asdf4321"
 
 # Verificar usuarios creados en AD
 sudo samba-tool user list
